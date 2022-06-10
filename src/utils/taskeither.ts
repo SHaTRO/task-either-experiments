@@ -5,7 +5,7 @@ import { Response } from 'superagent';
 import { flow, Lazy } from 'fp-ts/function';
 import { decodeOrErrorC } from './schema';
 
-export const tryCatchWithErrorTE = <A>(fn: Lazy<Promise<A>>) => TE.tryCatch(fn, E.toError);
+export const tryCatchWithErrorTE = <A,B>(fn: (a: A) => Promise<B>) => TE.tryCatchK(fn, E.toError);
 
 export const decodeBodyOrErrorTE = <A,O,I>(codec: t.Type<A,O,I>) => flow(
   (resp: Response) => resp.body,

@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
+import { flow } from 'fp-ts/function';
 import { PositiveInt } from 'io-ts-numbers';
 import request from 'superagent';
 import { decodeBodyOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
@@ -46,14 +46,14 @@ export type SearchRequest = t.TypeOf<typeof SearchRequest>;
 
 // functions
 
-const getFromPathLambda = (path: string) => () => request.get(`${config.public_apis.url}${path}`);
-const fetchPathTE = (path: string) => <A,O,I>(codec: t.Type<A,O,I>) => (): TE.TaskEither<Error, A> => pipe(
-  tryCatchWithErrorTE( getFromPathLambda(path) ),
+const getFromPathLambda = (path: string) => request.get(`${config.public_apis.url}${path}`);
+const fetchPathTE = <A,O,I>(codec: t.Type<A,O,I>) => flow(
+  tryCatchWithErrorTE(getFromPathLambda),
   TE.chain( decodeBodyOrErrorTE(codec) ) 
 );
 
 /** function to fetch the categories */
-export const fetchCategoriesTE: () => TE.TaskEither<Error, PublicCategories> = fetchPathTE(config.public_apis.paths.categories)(PublicCategories);
+export const fetchCategoriesTE: TE.TaskEither<Error, PublicCategories> = fetchPathTE(PublicCategories)(config.public_apis.paths.categories);
 
 /** function to fetch the entries */
-export const fetchEntriesTE: () => TE.TaskEither<Error, PublicEntries> = fetchPathTE(config.public_apis.paths.entries)(PublicEntries);
+export const fetchEntriesTE: TE.TaskEither<Error, PublicEntries> = fetchPathTE(PublicEntries)(config.public_apis.paths.entries);

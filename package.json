@@ -4,6 +4,7 @@
   "description": "fp-ts/TaskEither Exhibits",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --incremental",
     "test": "jest"
   },
   "author": "",
@@ -40,15 +41,20 @@
     "tslib": "^2.4.0"
   },
   "jest": {
+    "roots": [
+      "<rootDir>/src" 
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
-      "!src/**/*.{spec,test}.ts"
+      "!**/*.{spec,test}.ts"
     ],
+    "testEnvironment": "node",
     "coverageProvider": "v8",
-    "coverageReporters": [ "lcov", "html", [ "text" ], "text-summary" ]
+    "coverageReporters": [ "lcov", "html", [ "text" ], "text-summary" ],
+    "moduleDirectories": [ "node_modules" ]
   }
 }

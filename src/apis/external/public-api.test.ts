@@ -6,7 +6,7 @@ describe('Public APIs Database', () => {
 
   it('fetch categories', async () => {
     const { count, categories } = pipe(
-      await fetchCategoriesTE()(),
+      await fetchCategoriesTE(),
       E.getOrElseW( (e) => { throw e }),
     );
     expect(count).toBeGreaterThan(0);
@@ -16,7 +16,7 @@ describe('Public APIs Database', () => {
 
   it('fetch entries', async () => {
     const { count, entries } = pipe(
-      await fetchEntriesTE()(),
+      await fetchEntriesTE(),
       E.getOrElseW( (e) => { throw e }),
     );
     expect(count).toBeGreaterThan(0);
