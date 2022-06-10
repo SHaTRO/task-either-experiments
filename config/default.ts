@@ -3,7 +3,7 @@ const PUBLIC_API_BASE_URL = 'https://api.publicapis.org';
 const PUBLIC_API_CATEGORIES_PATH = '/categories';
 const PUBLIC_API_ENTRIES_PATH = '/entries';
 
-const SEVEN_TIMER_BASE_URL = 'http://www.7timer.info';
+const SEVEN_TIMER_BASE_URL = 'https://www.7timer.info';
 const SEVEN_TIMER_ASTRO_PATH = '/bin/astro.php';
 
 module.exports = {

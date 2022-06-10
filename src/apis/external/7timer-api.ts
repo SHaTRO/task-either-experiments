@@ -3,8 +3,18 @@ import * as TE from 'fp-ts/TaskEither';
 import * as t from 'io-ts';
 import { PositiveInt } from 'io-ts-numbers';
 import request from 'superagent';
-import { decodeBodyOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
+import { decodeBodyOrErrorTE, decodeTextOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
 import { flow, pipe } from 'fp-ts/lib/function';
+
+export const NumericalKeyOf = <D extends Record<number, unknown>>(
+  keys: D,
+  name: string = Object.keys(keys)
+    .map(k => JSON.stringify(k))
+    .join(' | ')
+): t.KeyofC<D> => {
+  const is = (u: unknown): u is keyof D => t.number.is(u) && Object.prototype.hasOwnProperty.call(keys, u)
+  return new t.KeyofType(name, is, (u, c) => (is(u) ? t.success(u) : t.failure(u, c)), t.identity, keys)
+}
 
 type RelativeHumidityIndicators = -4|-3|-2|-1|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16;
 export const RelativeHumidityMap: Readonly<Record<RelativeHumidityIndicators, string>> = {
@@ -30,7 +40,7 @@ export const RelativeHumidityMap: Readonly<Record<RelativeHumidityIndicators, st
   [15]: '95%-99%',
   [16]: '100%',
 };
-export const RelativeHumidity2m = t.keyof(RelativeHumidityMap);
+export const RelativeHumidity2m = NumericalKeyOf(RelativeHumidityMap);
 export type RelativeHumidity2m = t.TypeOf<typeof RelativeHumidity2m>;
 
 // to avoid confusion, do not export the Enum
@@ -63,7 +73,7 @@ export const WindSpeedMap: Readonly<Record<WindSpeedIndicators, WindDescriptor>>
   [7]: { mph: '54.8-73 mph', mps: '24.5-32.6', term: 'storm' },
   [8]: { mph: '>73 mph', mps: 'Over 32.6 m/s', term: 'hurricane' },
 };
-export const WindSpeed = t.keyof(WindSpeedMap);
+export const WindSpeed = NumericalKeyOf(WindSpeedMap);
 export type WindSpeed = t.TypeOf<typeof WindSpeed>;
 
 export const Wind10m = t.type({
@@ -88,7 +98,7 @@ export const AstroDataSeriesItem = t.type({
   cloudcover: PositiveInt,
   seeing: PositiveInt,
   transparency: PositiveInt,
-  lifted_index: PositiveInt,
+  lifted_index: t.Int,
   rh2m: RelativeHumidity2m,
   wind10m: Wind10m,
   temp2m: t.Int,   
@@ -101,6 +111,7 @@ export const AstroData = t.type({
   init: t.string,
   dataseries: t.readonlyArray(AstroDataSeriesItem), 
 });
+export type AstroData = t.TypeOf<typeof AstroData>;
 
 export type AltitudeCorrectionValue = 0|2|7;
 export const AltitudeCorrectionMap: Readonly<Record<AltitudeCorrectionValue, string>> = {
@@ -130,17 +141,16 @@ export type AstroQuery = t.TypeOf<typeof AstroQuery>;
 type QueryRecord = Readonly<Record<string, string|number|undefined>>;
 
 const getFromPathQuery = (path: string) => 
-  (query: QueryRecord) => 
-      request.get(`${config.seven_timer.url}${path}`).query(query);
+  (query: QueryRecord) => request.get(`${config.seven_timer.url}${path}`).query(query);
 
 const fetchPathWithQueryTE = 
-  <A,O,I>(responseCodec: t.Type<A,O,I>) =>
+  <A,O>(responseCodec: t.Type<A,O,unknown>) =>
     (path: string) =>
       <AR, OR extends QueryRecord, IR>(requestCodec: t.Type<AR,OR,IR>): ((query: AR) => TE.TaskEither<Error, A>) => 
         flow(
           requestCodec.encode,
           tryCatchWithErrorTE(getFromPathQuery(path)),
-          TE.chain(decodeBodyOrErrorTE(responseCodec))
+          TE.chain(decodeTextOrErrorTE(responseCodec))
         );
     
 export const fetchAstroTE = fetchPathWithQueryTE(AstroData)(config.seven_timer.paths.astro)(AstroQuery);
