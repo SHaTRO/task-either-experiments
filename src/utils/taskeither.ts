@@ -10,7 +10,6 @@ export const tryCatchWithErrorTE = <A,B>(fn: (a: A) => Promise<B>) => TE.tryCatc
 
 export const decodeBodyOrErrorTE = <A,O,I>(codec: t.Type<A,O,I>) => flow(
   (resp: Response) => resp.body,
-  (body) => { console.log('body: ', body); return body; },
   TE.fromEitherK(decodeOrErrorC(codec))
 );
 
