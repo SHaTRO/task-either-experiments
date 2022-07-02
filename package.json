@@ -40,6 +40,7 @@
     "monocle-ts": "^2.3.13",
     "newtype-ts": "^0.3.5",
     "superagent": "^7.1.3",
+    "ts-pattern": "^4.0.3",
     "tslib": "^2.4.0"
   },
   "jest": {
@@ -54,10 +55,8 @@
     "testTimeout": 30000,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/**/*.{spec,test}.ts"
+      "src/**/*.ts"
     ],
-    "coverageProvider": "v8",
     "coverageReporters": [
       "lcov",
       "html",

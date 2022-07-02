@@ -1,10 +1,13 @@
 import { config } from '../../config';
+import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as t from 'io-ts';
 import { PositiveInt } from 'io-ts-numbers';
 import request from 'superagent';
 import { decodeBodyOrErrorTE, decodeTextOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
 import { flow, pipe } from 'fp-ts/lib/function';
+import { Lens } from 'monocle-ts';
+import { mean, median, mode } from '../../math/averages';
 
 export const NumericalKeyOf = <D extends Record<number, unknown>>(
   keys: D,
@@ -112,6 +115,7 @@ export const AstroData = t.type({
   dataseries: t.readonlyArray(AstroDataSeriesItem), 
 });
 export type AstroData = t.TypeOf<typeof AstroData>;
+export type AstroDataEncoded = t.OutputOf<typeof AstroData>;
 
 export type AltitudeCorrectionValue = 0|2|7;
 export const AltitudeCorrectionMap: Readonly<Record<AltitudeCorrectionValue, string>> = {
@@ -153,4 +157,11 @@ const fetchPathWithQueryTE =
           TE.chain(decodeTextOrErrorTE(responseCodec))
         );
     
-export const fetchAstroTE = fetchPathWithQueryTE(AstroData)(config.seven_timer.paths.astro)(AstroQuery);
+export const fetchAstroTE: (q: AstroQuery) => TE.TaskEither<Error, AstroData> = fetchPathWithQueryTE(AstroData)(config.seven_timer.paths.astro)(AstroQuery);
+
+const astroPathLens = Lens.fromPath<AstroDataSeriesItem>();
+const astroPropLens = Lens.fromProp<AstroDataSeriesItem>();
+
+export const averageWindSpeed = mode(astroPathLens([ 'wind10m', 'speed' ]));
+export const averageTemperature = mean(astroPropLens('temp2m'));
+export const averageHumidity = median(astroPropLens('rh2m'));
