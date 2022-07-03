@@ -1,4 +1,4 @@
-import { fetchCategoriesTE, fetchEntriesTE } from "./public-api";
+import { fetchCategoriesTE, fetchEntriesTE } from './public-api';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import nock from 'nock';
@@ -17,7 +17,7 @@ describe('Public APIs Database', () => {
       .reply(200, contents);
     const { count, categories } = pipe(
       await fetchCategoriesTE(),
-      E.getOrElseW( (e) => { throw e }),
+      E.getOrElseW( (e) => { throw e; }),
     );
     expect(count).toBeGreaterThan(0);
     expect(categories).toBeTruthy();
@@ -31,7 +31,7 @@ describe('Public APIs Database', () => {
       .reply(200, contents);
     const { count, entries } = pipe(
       await fetchEntriesTE(),
-      E.getOrElseW( (e) => { throw e }),
+      E.getOrElseW( (e) => { throw e; }),
     );
     expect(count).toBeGreaterThan(0);
     expect(entries).toBeTruthy();

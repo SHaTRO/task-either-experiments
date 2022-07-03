@@ -1,11 +1,10 @@
 import { config } from '../../config';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as t from 'io-ts';
 import { PositiveInt } from 'io-ts-numbers';
 import request from 'superagent';
-import { decodeBodyOrErrorTE, decodeTextOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
-import { flow, pipe } from 'fp-ts/lib/function';
+import { decodeTextOrErrorTE, tryCatchWithErrorTE } from '../../utils/taskeither';
+import { flow } from 'fp-ts/lib/function';
 import { Lens } from 'monocle-ts';
 import { mean, median, mode } from '../../math/averages';
 
@@ -15,9 +14,9 @@ export const NumericalKeyOf = <D extends Record<number, unknown>>(
     .map(k => JSON.stringify(k))
     .join(' | ')
 ): t.KeyofC<D> => {
-  const is = (u: unknown): u is keyof D => t.number.is(u) && Object.prototype.hasOwnProperty.call(keys, u)
-  return new t.KeyofType(name, is, (u, c) => (is(u) ? t.success(u) : t.failure(u, c)), t.identity, keys)
-}
+  const is = (u: unknown): u is keyof D => t.number.is(u) && Object.prototype.hasOwnProperty.call(keys, u);
+  return new t.KeyofType(name, is, (u, c) => (is(u) ? t.success(u) : t.failure(u, c)), t.identity, keys);
+};
 
 type RelativeHumidityIndicators = -4|-3|-2|-1|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16;
 export const RelativeHumidityMap: Readonly<Record<RelativeHumidityIndicators, string>> = {
@@ -56,7 +55,7 @@ enum WindDirectionEnum {
   SW,
   W,
   NW,
-};
+}
 export const WindDirection = t.keyof(WindDirectionEnum);
 export type WindDirection = t.TypeOf<typeof WindDirection>;
 
@@ -92,7 +91,7 @@ enum PrecipitationTypeEnum {
   frzr,
   icep,
   none,
-};
+}
 export const PrecipitationType = t.keyof(PrecipitationTypeEnum);
 export type PrecipitationType = t.TypeOf<typeof PrecipitationType>;
 

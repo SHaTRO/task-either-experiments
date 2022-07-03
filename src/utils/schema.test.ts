@@ -19,7 +19,7 @@ describe('utils/schema', () => {
         bar: 123,
       },
       decodeOrErrorC(TestCodec),
-      E.getOrElseW( (e) => { throw e } ),
+      E.getOrElseW( (e) => { throw e; } ),
     );
     expect(foo).toEqual('Foo');
     expect(bar).toEqual(123);

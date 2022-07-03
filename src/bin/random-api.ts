@@ -17,4 +17,4 @@ async function main(..._args: string[]): Promise<void> {
   console.log('Random entry', randomEntry);
 }
 
-main().catch(e => { throw e });
+main().catch(e => { throw e; });

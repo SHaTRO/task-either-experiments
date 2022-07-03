@@ -55,14 +55,14 @@ export const median = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S
       .when(isZero, () => O.none)
       .when(isEven, () => meanN(RA.compact([ RA.last(a[0]), RA.head(a[1]) ])))
       .otherwise( () => meanN(RA.compact([ RA.head(a[1]) ]))
-    ),
+      ),
     O.match(
       () => undefined,
       identity
     )
   );
   return result;
-}
+};
 
 
 type freqTuple = [ string, number ];
@@ -72,21 +72,21 @@ const freqEq = fromEquals((a: freqTuple, b: freqTuple) => N.Eq.equals(a[1], b[1]
 const freqTupleToNumber = (n: freqTuple) => Number.parseFloat(n[0]);
 
 export const mode = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]): number[]|undefined => pipe(
-    as,
-    RA.map(lens.get),
-    (ras: readonly A[]) => R.fromFoldableMap({ concat: (a: number, b: number) => a + b }, RA.Foldable)(ras, (a) => [ `${a}`, 1 ]),
-    R.toEntries,
-    RNA.fromArray,
-    O.match(
-      () => undefined,
-      flow(
-        RNA.sort( freqTupleOrd ),
-        RNA.reverse,
-        RNA.group( freqEq ),
-        (a) => a[0],      // get the first group (RNA.head does NOT work here?!?!)
-        RNA.map(freqTupleToNumber),   // map to their original numbers
-        RNA.sort(N.Ord),  // order for response 
-        (a) => [ ...a ],  // convert to number array
-      )
+  as,
+  RA.map(lens.get),
+  (ras: readonly A[]) => R.fromFoldableMap({ concat: (a: number, b: number) => a + b }, RA.Foldable)(ras, (a) => [ `${a}`, 1 ]),
+  R.toEntries,
+  RNA.fromArray,
+  O.match(
+    () => undefined,
+    flow(
+      RNA.sort( freqTupleOrd ),
+      RNA.reverse,
+      RNA.group( freqEq ),
+      (a) => a[0],      // get the first group (RNA.head does NOT work here?!?!)
+      RNA.map(freqTupleToNumber),   // map to their original numbers
+      RNA.sort(N.Ord),  // order for response 
+      (a) => [ ...a ],  // convert to number array
     )
-  );
+  )
+);

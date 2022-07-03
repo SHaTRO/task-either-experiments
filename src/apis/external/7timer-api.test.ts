@@ -1,5 +1,4 @@
 import { pipe } from 'fp-ts/function';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import nock from 'nock';
 import { AstroData, averageHumidity, averageTemperature, averageWindSpeed, fetchAstroTE } from './7timer-api';
@@ -27,7 +26,7 @@ describe('7Timer! API', () => {
         unit: 'british',
         output: 'json',
       }),
-      TE.getOrElse((e) => { throw e }),
+      TE.getOrElse((e) => { throw e; }),
     )();
   }
       
