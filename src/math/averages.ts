@@ -1,7 +1,7 @@
 import { flow, identity, pipe } from 'fp-ts/function';
 import * as N from 'fp-ts/number';
-import * as O from 'fp-ts/option';
-import * as R from 'fp-ts/record';
+import * as O from 'fp-ts/Option';
+import * as R from 'fp-ts/Record';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as RNA from 'fp-ts/ReadonlyNonEmptyArray';
 import { Lens } from 'monocle-ts';
@@ -9,17 +9,23 @@ import { match } from 'ts-pattern';
 import { fromCompare } from 'fp-ts/lib/Ord';
 import { fromEquals } from 'fp-ts/lib/Eq';
 
+/** meanN takes a readonly array of numbers (N extends number) and returns Option<N> */
 const meanN = <N extends number>(as: readonly N[]) => pipe(
   as,
   RNA.fromReadonlyArray,
   O.map(
     flow(
-      RNA.reduce(0, (b, a: number) => b + a),
+      RNA.reduce(0, (b, a: N) => b + a),
       (sum) => sum / as.length,
     )
   )
 );
 
+/**
+ * Given a lens, the mean function returns the mean average of that property in a list of objects.
+ * @param lens 
+ * @returns number mean of the lensed values
+ */
 export const mean = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]): number|undefined => 
   pipe(
     as,
@@ -34,6 +40,11 @@ export const mean = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]
 const isZero = (n: number) => n === 0;
 const isEven = (n: number) => n % 2 === 0;
 
+/**
+ * Given a lens, the median function returns the median average of that property in a list of objects.
+ * @param lens 
+ * @returns number median of the lensed values
+ */
 export const median = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]): number|undefined => {
   const result = pipe(
     as,
