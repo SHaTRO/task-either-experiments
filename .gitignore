@@ -18,6 +18,8 @@ public/css/main.css
 
 # Coverage reports
 coverage
+test-report.xml
+eslint-report.json
 
 # API keys and secrets
 .env
