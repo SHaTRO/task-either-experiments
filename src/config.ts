@@ -4,7 +4,6 @@ import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import { decodeOrErrorC } from './utils/schema';
 
-// TODO: refine
 export const PublicApisConfig = t.type({
   url: t.string,
   paths: t.type({

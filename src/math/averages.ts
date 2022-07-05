@@ -45,8 +45,8 @@ const isEven = (n: number) => n % 2 === 0;
  * @param lens 
  * @returns number median of the lensed values
  */
-export const median = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]): number|undefined => {
-  const result = pipe(
+export const median = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S[]): number|undefined => 
+  pipe(
     as,
     RA.map(lens.get),
     RA.sort(N.Ord),
@@ -61,8 +61,6 @@ export const median = <S, A extends number>(lens: Lens<S, A>) => (as: readonly S
       identity
     )
   );
-  return result;
-};
 
 
 type freqTuple = [ string, number ];
